@@ -7,7 +7,7 @@ const geistSans = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
 
 export const metadata: Metadata = {
-  title: 'Palletline — Smart Warehouse Ops Console',
+  title: 'StockSarthi — Smart Warehouse Ops Console',
   description:
     'A decision-first warehouse operations platform: inventory monitoring, order prioritization, smart allocation, picking optimization, and exception resolution.',
   generator: 'v0.app',

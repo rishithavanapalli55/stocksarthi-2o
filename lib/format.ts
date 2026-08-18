@@ -1,13 +1,13 @@
 export function currency(n: number): string {
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  return n.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 }
 
 export function currencyPrecise(n: number): string {
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+  return n.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
 }
 
 export function num(n: number): string {
-  return n.toLocaleString('en-US')
+  return n.toLocaleString('en-IN')
 }
 
 /** compact relative-time, e.g. "2h 14m", "-45m" (overdue) */

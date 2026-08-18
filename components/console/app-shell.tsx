@@ -53,7 +53,7 @@ export function AppShell() {
             <Warehouse className="h-4.5 w-4.5" strokeWidth={2.2} />
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight">Palletline</div>
+            <div className="text-sm font-semibold tracking-tight">StockSarthi</div>
             <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Ops Console</div>
           </div>
         </div>
