@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { PackagePlus, ShieldAlert } from 'lucide-react'
+import { PackagePlus, ShieldAlert, Search, X } from 'lucide-react'
 import { useWarehouse } from '@/components/warehouse-provider'
 import { Panel, StatCard, Meter, Pill } from '@/components/console/primitives'
 import { ZonePill } from '@/components/console/shared'
@@ -16,11 +16,19 @@ export function InventoryView() {
   const { state, reorder, reportDamage } = useWarehouse()
   const { products } = state
   const [zone, setZone] = useState<Zone | 'ALL'>('ALL')
+  const [query, setQuery] = useState('')
 
-  const filtered = useMemo(
-    () => products.filter((p) => zone === 'ALL' || p.zone === zone),
-    [products, zone],
-  )
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return products
+      .filter((p) => zone === 'ALL' || p.zone === zone)
+      .filter((p) =>
+        q === '' ||
+        p.sku.toLowerCase().includes(q) ||
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q),
+      )
+  }, [products, zone, query])
 
   const outOfStock = products.filter((p) => available(p) === 0).length
   const lowStock = products.filter((p) => available(p) > 0 && available(p) <= p.reorderPoint).length
@@ -40,19 +48,40 @@ export function InventoryView() {
         title="Stock ledger"
         subtitle="Live on-hand, reservations, and reorder posture per SKU"
         action={
-          <div className="flex items-center gap-1">
-            {ZONES.map((z) => (
-              <button
-                key={z}
-                onClick={() => setZone(z)}
-                className={cn(
-                  'rounded px-2 py-1 text-[11px] font-medium transition-colors',
-                  zone === z ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                )}
-              >
-                {z === 'ALL' ? 'All' : z}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="SKU, product, category"
+                aria-label="Search inventory"
+                className="h-7 w-48 rounded-md border border-border bg-background pl-7 pr-6 text-xs outline-none placeholder:text-muted-foreground focus:border-primary/60"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery('')}
+                  aria-label="Clear search"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              {ZONES.map((z) => (
+                <button
+                  key={z}
+                  onClick={() => setZone(z)}
+                  className={cn(
+                    'rounded px-2 py-1 text-[11px] font-medium transition-colors',
+                    zone === z ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  )}
+                >
+                  {z === 'ALL' ? 'All' : z}
+                </button>
+              ))}
+            </div>
           </div>
         }
       >
@@ -70,6 +99,13 @@ export function InventoryView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                    No SKUs match this view.
+                  </td>
+                </tr>
+              )}
               {filtered.map((p) => {
                 const avail = available(p)
                 const status = avail === 0 ? 'out' : avail <= p.reorderPoint ? 'low' : 'ok'

@@ -344,7 +344,9 @@ export function WarehouseProvider({ children }: { children: ReactNode }) {
     const id = setInterval(() => {
       dispatch({ type: 'TICK', deltaMs: 4 * 60_000 })
       if (Math.random() < 0.4) dispatch({ type: 'ADVANCE_ALL' })
-      if (Math.random() < 0.25) dispatch({ type: 'CREATE_ORDER' })
+      if (Math.random() < 0.35) dispatch({ type: 'CREATE_ORDER' })
+      // continuously allocate newly-streamed orders so the pipeline keeps flowing
+      dispatch({ type: 'RUN_ALLOCATION' })
     }, 2500)
     return () => clearInterval(id)
   }, [simulating])
